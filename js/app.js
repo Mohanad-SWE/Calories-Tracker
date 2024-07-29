@@ -78,20 +78,20 @@ class CaloriesTracker {
     const mealItems = document.querySelector('#meal-items');
     const newMeal = document.createElement('div');
     newMeal.classList.add('card', 'my-2');
-    mealItems.setAttribute('id', 'meal-items');
+    newMeal.setAttribute('data-id', meal.id);
 
     newMeal.innerHTML = `
       <div class="card-body">
-    <div class="d-flex align-items-center justify-content-between">
-      <h4 class="mx-1"> ${meal.name} </h4>
-      <div class="fs-1 bg-primary text-white text-center rounded-2 px-2 px-sm-5">
-        ${meal.calories}
+        <div class="d-flex align-items-center justify-content-between">
+          <h4 class="mx-1"> ${meal.name} </h4>
+          <div class="fs-1 bg-primary text-white text-center rounded-2 px-2 px-sm-5">
+            ${meal.calories}
+          </div>
+          <button class="delete btn btn-danger btn-sm mx-2">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
       </div>
-      <button class="delete btn btn-danger btn-sm mx-2">
-        <i class="fa-solid fa-xmark"></i>
-      </button>
-    </div>
-  </div>
     `;
     mealItems.appendChild(newMeal);
   }
@@ -99,20 +99,20 @@ class CaloriesTracker {
     const workoutItems = document.querySelector('#workout-items');
     const newWorkout = document.createElement('div');
     newWorkout.classList.add('card', 'my-2');
-    workoutItems.setAttribute('id', 'workout-items');
+    newWorkout.setAttribute('data-id', workout.id);
 
     newWorkout.innerHTML = `
       <div class="card-body">
-    <div class="d-flex align-items-center justify-content-between">
-      <h4 class="mx-1"> ${workout.name} </h4>
-      <div class="fs-1 bg-primary text-white text-center rounded-2 px-2 px-sm-5">
-        ${workout.calories}
+        <div class="d-flex align-items-center justify-content-between">
+          <h4 class="mx-1"> ${workout.name} </h4>
+          <div class="fs-1 bg-primary text-white text-center rounded-2 px-2 px-sm-5">
+            ${workout.calories}
+          </div>
+          <button class="delete btn btn-danger btn-sm mx-2">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
       </div>
-      <button class="delete btn btn-danger btn-sm mx-2">
-        <i class="fa-solid fa-xmark"></i>
-      </button>
-    </div>
-  </div>
     `;
     workoutItems.appendChild(newWorkout);
   }
@@ -125,6 +125,7 @@ class CaloriesTracker {
     this._displayCaloriesBurned();
     this._displayCaloriesRemaining();
     this._displayCalorieProgress();
+
   }
 }
 
@@ -152,6 +153,12 @@ class App {
 
     this._mealForm.addEventListener('submit', this._newEntry.bind(this, 'meal'));
     this._workoutForm.addEventListener('submit', this._newEntry.bind(this, 'workout'));
+
+    document.getElementById('meal-items')
+      .addEventListener('click', this._removeItems.bind(this, 'meal'));
+
+    document.getElementById('workout-items')
+      .addEventListener('click', this._removeItems.bind(this, 'workout'));
   }
 
   _newEntry(type, event) {
@@ -169,6 +176,10 @@ class App {
       return;
     }
 
+    const entry = new Meal(entryName, +entryCalories);
+    this._caloriesTracker[`add${type.charAt(0).toUpperCase() + type.slice(1)}`](entry);
+    document.querySelector(nameSelector).value = '';
+    document.querySelector(caloriesSelector).value = '';
     if (type === 'meal') {
       const meal = new Meal(entryName, +entryCalories);
       this._caloriesTracker.addMeal(meal);
@@ -184,6 +195,21 @@ class App {
       collapseElement.classList.remove('show');
     }
   }
+
+  _removeItems(type, event) {
+    if (event.target.classList.contains('delete') || event.target.classList.contains('fa-xmark')) {
+      if (confirm('Are you sure you want to delete this item?')) {
+        const id = event.target.closest('.card').getAttribute('data-id');
+        this._caloriesTracker[`remove${type.charAt(0).toUpperCase() + type.slice(1)}`](id);
+        if (type === 'meal') {
+          this._caloriesTracker.removeMeal(id);
+        } else if (type === 'workout') {
+          this._caloriesTracker.removeWorkout(id);
+        }
+      }
+    }
+  }
+
 }
 
 new App();
