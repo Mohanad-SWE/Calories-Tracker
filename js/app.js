@@ -22,6 +22,22 @@ class CaloriesTracker {
     this._render();
   }
 
+  removeMeal(id) {
+    const index = this._meals.findIndex((meal) => meal.id === id);
+    if (index === -1) return; // Meal not found
+    const meal = this._meals.splice(index, 1)[0];
+    this._totalCalories -= meal.calories;
+    this._render();
+  }
+
+  removeWorkout(id) {
+    const index = this._workouts.findIndex((workout) => workout.id === id);
+    if (index === -1) return; // Workout not found
+    const workout = this._workouts.splice(index, 1)[0];
+    this._totalCalories += workout.calories;
+    this._render();
+  }
+
   setCaloriesLimit(limit) {
     this._caloriesLimit = limit;
     this._render();
@@ -74,6 +90,7 @@ class CaloriesTracker {
       calorieProgress.classList.remove('bg-danger');
     }
   }
+
   _displayNewMeal(meal) {
     const mealItems = document.querySelector('#meal-items');
     const newMeal = document.createElement('div');
@@ -95,6 +112,7 @@ class CaloriesTracker {
     `;
     mealItems.appendChild(newMeal);
   }
+
   _displayNewWorkout(workout) {
     const workoutItems = document.querySelector('#workout-items');
     const newWorkout = document.createElement('div');
@@ -116,7 +134,6 @@ class CaloriesTracker {
     `;
     workoutItems.appendChild(newWorkout);
   }
-
 
   _render() {
     this._displayCaloriesTotal();
@@ -152,6 +169,12 @@ class App {
 
     this._mealForm.addEventListener('submit', this._newEntry.bind(this, 'meal'));
     this._workoutForm.addEventListener('submit', this._newEntry.bind(this, 'workout'));
+
+    document.getElementById('meal-items')
+      .addEventListener('click', this._removeItems.bind(this, 'meal'));
+
+    document.getElementById('workout-items')
+      .addEventListener('click', this._removeItems.bind(this, 'workout'));
   }
 
   _newEntry(type, event) {
@@ -182,6 +205,22 @@ class App {
     const collapseElement = document.querySelector(collapseSelector);
     if (collapseElement.classList.contains('show')) {
       collapseElement.classList.remove('show');
+    }
+  }
+
+  _removeItems(type, event) {
+    if (event.target.classList.contains('delete') || event.target.classList.contains('fa-xmark')) {
+      if (confirm('Are you sure you want to delete this item?')) {
+        const id = event.target.closest('.card').getAttribute('data-id');
+
+        if (type === 'meal') {
+          this._caloriesTracker.removeMeal(id);
+        } else if (type === 'workout') {
+          this._caloriesTracker.removeWorkout(id);
+        }
+
+        event.target.closest('.card').remove();
+      }
     }
   }
 }
