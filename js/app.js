@@ -125,7 +125,6 @@ class CaloriesTracker {
     this._displayCaloriesBurned();
     this._displayCaloriesRemaining();
     this._displayCalorieProgress();
-
   }
 }
 
@@ -153,12 +152,6 @@ class App {
 
     this._mealForm.addEventListener('submit', this._newEntry.bind(this, 'meal'));
     this._workoutForm.addEventListener('submit', this._newEntry.bind(this, 'workout'));
-
-    document.getElementById('meal-items')
-      .addEventListener('click', this._removeItems.bind(this, 'meal'));
-
-    document.getElementById('workout-items')
-      .addEventListener('click', this._removeItems.bind(this, 'workout'));
   }
 
   _newEntry(type, event) {
@@ -176,10 +169,6 @@ class App {
       return;
     }
 
-    const entry = new Meal(entryName, +entryCalories);
-    this._caloriesTracker[`add${type.charAt(0).toUpperCase() + type.slice(1)}`](entry);
-    document.querySelector(nameSelector).value = '';
-    document.querySelector(caloriesSelector).value = '';
     if (type === 'meal') {
       const meal = new Meal(entryName, +entryCalories);
       this._caloriesTracker.addMeal(meal);
@@ -195,21 +184,6 @@ class App {
       collapseElement.classList.remove('show');
     }
   }
-
-  _removeItems(type, event) {
-    if (event.target.classList.contains('delete') || event.target.classList.contains('fa-xmark')) {
-      if (confirm('Are you sure you want to delete this item?')) {
-        const id = event.target.closest('.card').getAttribute('data-id');
-        this._caloriesTracker[`remove${type.charAt(0).toUpperCase() + type.slice(1)}`](id);
-        if (type === 'meal') {
-          this._caloriesTracker.removeMeal(id);
-        } else if (type === 'workout') {
-          this._caloriesTracker.removeWorkout(id);
-        }
-      }
-    }
-  }
-
 }
 
 new App();
