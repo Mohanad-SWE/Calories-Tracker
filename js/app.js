@@ -38,8 +38,9 @@ class CaloriesTracker {
     this._render();
   }
 
-  setCaloriesLimit(limit) {
-    this._caloriesLimit = limit;
+  setLimit(calorieLimit) {
+    this._caloriesLimit = calorieLimit;
+    this._displayCaloriesLimit();
     this._render();
   }
 
@@ -191,6 +192,9 @@ class App {
 
     document.getElementById('reset')
       .addEventListener('click', this._reset.bind(this));
+
+    document.getElementById('limit-form')
+      .addEventListener('submit', this._setLimit.bind(this));
   }
 
   _newEntry(type, event) {
@@ -256,6 +260,26 @@ class App {
     document.getElementById('workout-items').innerHTML = '';
     document.getElementById('filter-meals').value = '';
     document.getElementById('filter-workouts').value = '';
+  }
+
+  _setLimit(event) {
+    event.preventDefault();
+    const limitInput = document.querySelector('#limit');
+    const limitValue = limitInput.value;
+
+    if (limitValue === '' || isNaN(limitValue)) {
+      alert('Please enter a valid number for the calorie limit');
+      return;
+    }
+
+    this._caloriesTracker.setLimit(+limitValue);
+    limitInput.value = '';
+
+    const modalEl = document.querySelector('#limit-modal');
+    const modal = bootstrap.Modal.getInstance(modalEl);
+    modal.hide();
+
+    document.querySelector('#limit-form').reset();
   }
 
 }
