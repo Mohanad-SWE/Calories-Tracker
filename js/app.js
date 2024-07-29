@@ -37,8 +37,6 @@ class CaloriesTracker {
   _displayCaloriesTotal() {
     const totalCalories = document.querySelector('#calories-total');
     totalCalories.textContent = `${this._totalCalories}`;
-
-    totalCalories.style.color = this._totalCalories > this._caloriesLimit ? 'red' : 'black';
   }
 
   _displayCaloriesLimit() {
@@ -62,8 +60,6 @@ class CaloriesTracker {
     const caloriesRemaining = document.querySelector('#calories-remaining');
     const remaining = this._caloriesLimit - this._totalCalories;
     caloriesRemaining.textContent = `${remaining}`;
-    
-    caloriesRemaining.style.color = remaining < 0 ? 'red' : 'black';
   }
 }
 
