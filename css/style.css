@@ -5,5 +5,7 @@
 }
 
 .hidden {
-  display: none;
-}/*# sourceMappingURL=style.css.map */
+  display: block;
+}
+
+/*# sourceMappingURL=style.css.map */
