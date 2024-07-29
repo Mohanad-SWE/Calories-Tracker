@@ -6,7 +6,8 @@ class CaloriesTracker {
     this._workouts = [];
     this._render();
   }
-  // Public Method
+
+  // Public Methods
   addMeal(meal) {
     this._meals.push(meal);
     this._totalCalories += meal.calories;
@@ -17,7 +18,11 @@ class CaloriesTracker {
     this._workouts.push(workout);
     this._totalCalories -= workout.calories;
     this._render();
+  }
 
+  setCaloriesLimit(limit) {
+    this._caloriesLimit = limit;
+    this._render();
   }
 
   _render() {
@@ -28,17 +33,12 @@ class CaloriesTracker {
     this._displayCaloriesRemaining();
   }
 
-  // Privet Methods
+  // Private Methods
   _displayCaloriesTotal() {
     const totalCalories = document.querySelector('#calories-total');
     totalCalories.textContent = `${this._totalCalories}`;
 
-    if (this._totalCalories > this._caloriesLimit) {
-      totalCalories.style.color = 'red';
-    } else {
-      totalCalories.style.color = 'black';
-    }
-
+    totalCalories.style.color = this._totalCalories > this._caloriesLimit ? 'red' : 'black';
   }
 
   _displayCaloriesLimit() {
@@ -48,34 +48,23 @@ class CaloriesTracker {
 
   _displayCaloriesConsumed() {
     const caloriesConsumed = document.querySelector('#calories-consumed');
-    let totalConsumed = 0;
-    for (let meal of this._meals) {
-      totalConsumed += meal.calories;
-    }
+    let totalConsumed = this._meals.reduce((sum, meal) => sum + meal.calories, 0);
     caloriesConsumed.textContent = `${totalConsumed}`;
   }
 
   _displayCaloriesBurned() {
     const caloriesBurned = document.querySelector('#calories-burned');
-    let totalBurned = 0;
-    for (let workout of this._workouts) {
-      totalBurned += workout.calories;
-    }
+    let totalBurned = this._workouts.reduce((sum, workout) => sum + workout.calories, 0);
     caloriesBurned.textContent = `${totalBurned}`;
   }
 
   _displayCaloriesRemaining() {
     const caloriesRemaining = document.querySelector('#calories-remaining');
-    caloriesRemaining.textContent = `${this._caloriesLimit - this._totalCalories}`;
-
-    if (this._totalCalories > this._caloriesLimit) {
-      caloriesRemaining.style.color = 'red';
-    } else {
-      caloriesRemaining.style.color = 'black';
-    }
+    const remaining = this._caloriesLimit - this._totalCalories;
+    caloriesRemaining.textContent = `${remaining}`;
+    
+    caloriesRemaining.style.color = remaining < 0 ? 'red' : 'black';
   }
-
-
 }
 
 class Meal {
@@ -94,6 +83,7 @@ class Workout {
   }
 }
 
+// Example Usage
 const tracker = new CaloriesTracker();
 
 const breakfast = new Meal('Breakfast', 500);
@@ -106,11 +96,7 @@ tracker.addMeal(lunch);
 tracker.addMeal(dinner);
 tracker.addMeal(snacks);
 
-
 const running = new Workout('Running', 2000);
 tracker.addWorkout(running);
 
-
-
 console.log(tracker);
-
